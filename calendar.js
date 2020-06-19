@@ -1,3 +1,119 @@
+/*
+----------------------
+CLI CALENDAR
+----------------------
+
+This is a simple CLI calendar tool that takes 2 parameters. The first 
+parameter is the month in either 1-indexed integer format (1, 4), 3 
+letter abbreviation format ("Jan", "Apr"...), or full name ("January", 
+"April"). The second parameter is the full 4 digit year.
+
+The tool will print a text representation of the specified month's 
+calendar from that year. Weeks start on Sunday.
+
+Features:
+ - The current day will be highlighted if the current month is printed.
+ - If no command line arguments are given the current month will be 
+   printed
+ - If only a month command line argument is given the month from the 
+   current year will be printed.
+
+Limitations:
+The tool will only print calendars after the year 1923 CE. I did some 
+quick reading on when the current calendar was adopted, and it seems 
+like that was the last change. This limitation is to avoid printing 
+incorrect calendar months by working backwards through historical 
+calendar inconsistencies.
+*/
+
+function main() {
+  try {
+    // Read command line arguments to find month and year to print:
+    let monthArg = process.argv[2];
+    let yearArg = process.argv[3];
+
+    // Set defaults:
+    if (!monthArg && !yearArg) {
+      monthArg = String(todayMonth + 1); // Make 1 indexed
+      yearArg = String(todayYear);
+    }
+
+    if (!yearArg) {
+      yearArg = String(todayYear);
+    }
+
+    let yearInt;
+    // Check that arg strings are valid:
+    if (yearArg.length != 4) {
+      throw "Invalid year";
+    } else {
+      yearInt = parseInt(yearArg);
+    }
+
+    // Check that year is after 1922:
+    if (yearInt < 1923) {
+      throw "Year too early"
+    }
+
+    if (monthArg.length > 0) {
+
+      // Convert month name or short name ("Jan" or "January"
+      // should both work) into month int (1 indexed):
+      let monthInt;
+      // If length is greater than 2 it is a name:
+      if (monthArg.length > 2) {
+        // Find month name in months array, then find the index of
+        // that month:
+        monthInt = months.map(i => {
+          if (i[1] && i[1].substring(0, 3) === monthArg.substring(0, 3)) {
+            return true;
+          } else {
+            return false;
+          }
+        }).indexOf(true);
+        if (!monthInt) {
+          throw "Invalid month";
+        }
+      // else it is a number:
+      } else {
+        monthInt = parseInt(monthArg);
+        if (monthInt > 12 || monthInt < 1) {
+          throw "Invalid month";
+        }
+      }
+
+      if (!monthInt || Number.isNaN(monthInt)) {
+        throw "Invalid month";
+      }
+
+      // * * * * * * * * * * * * * * * 
+      // Print the month!
+      // * * * * * * * * * * * * * * * 
+      printMonth(monthInt, yearInt);
+
+
+    } else {
+      throw "Invalid month";
+    }
+  } catch (error) {
+    if (error === "Invalid month" || error === "Invalid year") {
+      console.log("Please enter valid month and year in one of the following formats:");
+      console.log(" - June 2020");
+      console.log(" - Jun 2020");
+      console.log(" - 6 2020")
+    } else if (error === "Year too early") {
+      console.log("Please provide a year after 1922");
+    } else {
+      console.log("Undefined error:", error);
+    }
+  }
+}
+
+const today = new Date()
+const todayYear = today.getFullYear();
+const todayMonth = today.getMonth();
+const todayDate = today.getDate();
+
 const months = [
   [null, null], // Make months not zero indexed
   [31, "January"],
@@ -53,6 +169,9 @@ function yearStartsOn(year) {
     Number.isNaN(intYear)
     || intYear < baseYear
   ) {
+    // This should no longer happen because I check
+    // in the command line arguments, but leaving in in
+    // case the function is used elsewhere in the future.
     console.log("Please provide a year after 1922");
     return null;
   }
@@ -123,10 +242,6 @@ function printMonth(month, year) {
   monthString += week + "\n";
 
   // Highlight today if in month:
-  const today = new Date()
-  const todayYear = today.getFullYear();
-  const todayMonth = today.getMonth();
-  const todayDate = today.getDate();
   if (
     year === todayYear
     && (month - 1) === todayMonth  
@@ -142,60 +257,6 @@ function printMonth(month, year) {
   console.log(monthString);
 }
 
-try {
-  // Read command line arguments to find month and year to print:
-  const monthArg = process.argv[2];
-  const yearArg = process.argv[3];
 
-  let yearInt;
-  // Check that arg strings are valid:
-  if (yearArg.length != 4) {
-    throw "Invalid year";
-  } else {
-    yearInt = parseInt(yearArg);
-  }
-
-  if (monthArg.length > 0) {
-
-    // Convert month name or short name ("Jan" or "January"
-    // should both work) into month int (1 indexed):
-    let monthInt;
-    // If length is greater than 2 it is a name:
-    if (monthArg.length > 2) {
-      // Find month name in months array, then find the index of
-      // that month:
-      monthInt = months.map(i => {
-        if (i[1] && i[1].substring(0, 3) === monthArg.substring(0, 3)) {
-          return true;
-        } else {
-          return false;
-        }
-      }).indexOf(true);
-      if (!monthInt) {
-        throw "Invalid month";
-      }
-    // else it is a number:
-    } else {
-      monthInt = parseInt(monthArg);
-    }
-
-    if (!monthInt || Number.isNaN(monthInt)) {
-      throw "Invalid month";
-    }
-
-    // * * * * * * * * * * * * * * * 
-    // Print the month!
-    // * * * * * * * * * * * * * * * 
-    printMonth(monthInt, yearInt);
-
-
-  } else {
-    throw "Invalid month";
-  }
-} catch (error) {
-  if (error === "Invalid month" || error === "Invalid year") {
-    console.log("Please enter valid month and year.");
-  } else {
-    console.log("Undefined error:", error);
-  }
-}
+// Run main function:
+main();
