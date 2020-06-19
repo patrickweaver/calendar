@@ -142,8 +142,60 @@ function printMonth(month, year) {
   console.log(monthString);
 }
 
+try {
+  // Read command line arguments to find month and year to print:
+  const monthArg = process.argv[2];
+  const yearArg = process.argv[3];
 
-printMonth(5, 2020);
-printMonth(6, 2020);
-printMonth(7, 2020);
-printMonth(8, 2020);
+  let yearInt;
+  // Check that arg strings are valid:
+  if (yearArg.length != 4) {
+    throw "Invalid year";
+  } else {
+    yearInt = parseInt(yearArg);
+  }
+
+  if (monthArg.length > 0) {
+
+    // Convert month name or short name ("Jan" or "January"
+    // should both work) into month int (1 indexed):
+    let monthInt;
+    // If length is greater than 2 it is a name:
+    if (monthArg.length > 2) {
+      // Find month name in months array, then find the index of
+      // that month:
+      monthInt = months.map(i => {
+        if (i[1] && i[1].substring(0, 3) === monthArg.substring(0, 3)) {
+          return true;
+        } else {
+          return false;
+        }
+      }).indexOf(true);
+      if (!monthInt) {
+        throw "Invalid month";
+      }
+    // else it is a number:
+    } else {
+      monthInt = parseInt(monthArg);
+    }
+
+    if (!monthInt || Number.isNaN(monthInt)) {
+      throw "Invalid month";
+    }
+
+    // * * * * * * * * * * * * * * * 
+    // Print the month!
+    // * * * * * * * * * * * * * * * 
+    printMonth(monthInt, yearInt);
+
+
+  } else {
+    throw "Invalid month";
+  }
+} catch (error) {
+  if (error === "Invalid month" || error === "Invalid year") {
+    console.log("Please enter valid month and year.");
+  } else {
+    console.log("Undefined error:", error);
+  }
+}
