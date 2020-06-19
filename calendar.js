@@ -52,11 +52,10 @@ function main() {
 
     // Check that year is after 1922:
     if (yearInt < 1923) {
-      throw "Year too early"
+      throw "Year too early";
     }
 
     if (monthArg.length > 0) {
-
       // Convert month name or short name ("Jan" or "January"
       // should both work) into month int (1 indexed):
       let monthInt;
@@ -64,17 +63,19 @@ function main() {
       if (monthArg.length > 2) {
         // Find month name in months array, then find the index of
         // that month:
-        monthInt = months.map(i => {
-          if (i[1] && i[1].substring(0, 3) === monthArg.substring(0, 3)) {
-            return true;
-          } else {
-            return false;
-          }
-        }).indexOf(true);
+        monthInt = months
+          .map((i) => {
+            if (i[1] && i[1].substring(0, 3) === monthArg.substring(0, 3)) {
+              return true;
+            } else {
+              return false;
+            }
+          })
+          .indexOf(true);
         if (!monthInt) {
           throw "Invalid month";
         }
-      // else it is a number:
+        // else it is a number:
       } else {
         monthInt = parseInt(monthArg);
         if (monthInt > 12 || monthInt < 1) {
@@ -86,21 +87,21 @@ function main() {
         throw "Invalid month";
       }
 
-      // * * * * * * * * * * * * * * * 
+      // * * * * * * * * * * * * * * *
       // Print the month!
-      // * * * * * * * * * * * * * * * 
+      // * * * * * * * * * * * * * * *
       printMonth(monthInt, yearInt);
-
-
     } else {
       throw "Invalid month";
     }
   } catch (error) {
     if (error === "Invalid month" || error === "Invalid year") {
-      console.log("Please enter valid month and year in one of the following formats:");
+      console.log(
+        "Please enter valid month and year in one of the following formats:"
+      );
       console.log(" - June 2020");
       console.log(" - Jun 2020");
-      console.log(" - 6 2020")
+      console.log(" - 6 2020");
     } else if (error === "Year too early") {
       console.log("Please provide a year after 1922");
     } else {
@@ -109,7 +110,7 @@ function main() {
   }
 }
 
-const today = new Date()
+const today = new Date();
 const todayYear = today.getFullYear();
 const todayMonth = today.getMonth();
 const todayDate = today.getDate();
@@ -127,7 +128,7 @@ const months = [
   [30, "September"],
   [31, "October"],
   [30, "November"],
-  [31, "December"]
+  [31, "December"],
 ];
 
 const dotw = [
@@ -137,7 +138,7 @@ const dotw = [
   "Wednesday",
   "Thursday",
   "Friday",
-  "Saturday"
+  "Saturday",
 ];
 
 // Takes a year and returns a boolean that
@@ -165,10 +166,7 @@ function yearStartsOn(year) {
   const intYear = parseInt(year);
 
   // Check that year param is at least baseYear:
-  if (
-    Number.isNaN(intYear)
-    || intYear < baseYear
-  ) {
+  if (Number.isNaN(intYear) || intYear < baseYear) {
     // This should no longer happen because I check
     // in the command line arguments, but leaving in in
     // case the function is used elsewhere in the future.
@@ -200,7 +198,7 @@ function yearStartsOn(year) {
 
 function printMonth(month, year) {
   // Get correct count of month lengths for year:
-  let adjMonthLengths = [...months.map(i => i[0])];
+  let adjMonthLengths = [...months.map((i) => i[0])];
   if (isLeapYear(year)) {
     adjMonthLengths[2] += 1;
   }
@@ -236,16 +234,12 @@ function printMonth(month, year) {
     let pad = String(monthDay).length === 1 ? "  " : " ";
     week += monthDay + pad;
     weekDay += 1;
-
   }
   // Add final week to monthString
   monthString += week + "\n";
 
   // Highlight today if in month:
-  if (
-    year === todayYear
-    && (month - 1) === todayMonth  
-  ) {
+  if (year === todayYear && month - 1 === todayMonth) {
     // Add reverse escape string to monthString
     // on today's date if present
     monthString = monthString.replace(todayDate, `\x1b[7m${todayDate}\x1b[0m`);
@@ -256,7 +250,6 @@ function printMonth(month, year) {
   console.log("\x1b[2mS  M  T  W  T  F  S  \x1b[0m"); // Dim days of the week label
   console.log(monthString);
 }
-
 
 // Run main function:
 main();
