@@ -32,6 +32,11 @@ function main() {
     let monthArg = process.argv[2];
     let yearArg = process.argv[3];
 
+    // Match month capitalization to months list:
+    if (monthArg && monthArg.length > 0) {
+      monthArg = monthArg[0].toUpperCase() + (monthArg.substring(1, monthArg.length).toLowerCase())
+    }
+
     // Set defaults:
     if (!monthArg && !yearArg) {
       monthArg = String(todayMonth + 1); // Make 1 indexed
